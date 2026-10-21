@@ -30,7 +30,8 @@ class Category(models.Model):
     is_published = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
 class Location(models.Model):
     name = models.CharField(max_length=256)
     is_published = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)    
+    created_at = models.DateTimeField(auto_now_add=True)
