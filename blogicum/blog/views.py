@@ -16,7 +16,7 @@ def index(request):
     return render(request, template_name, context)
 
 
-def post_detail(request, pk):
+def post_detail(request, id):
     template_name = 'blog/detail.html'
 
     post = get_object_or_404(
@@ -25,7 +25,7 @@ def post_detail(request, pk):
             pub_date__lte=timezone.now(),
             category__is_published=True
         ).select_related('category'),
-        pk=pk
+        pk=id
     )
 
     context = {'post': post}
@@ -37,7 +37,7 @@ def category_posts(request, category_slug):
 
     category = get_object_or_404(
         Category,
-        category_slug=category_slug,
+        slug=category_slug,
         is_published=True
     )
 
