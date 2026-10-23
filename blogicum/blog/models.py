@@ -8,6 +8,11 @@ User = get_user_model()
 
 
 class PostQuerySet(models.QuerySet):
+    """
+    Этот класс создает шаблон запроса, где
+    вместо self подставляется Post.objects
+    """
+
     def published(self):
         return self.filter(
             is_published=True,
@@ -17,6 +22,11 @@ class PostQuerySet(models.QuerySet):
 
 
 class PostManager(models.Manager):
+    """
+    Здесь происходить связь модели Post.objects с БД через get_queryset
+    и вызов самого запроса published
+    """
+
     def get_queryset(self):
         return PostQuerySet(self.model, using=self._db)
 
@@ -71,6 +81,7 @@ class Post(BaseModel):
         verbose_name='Категория',
     )
 
+    # Подключается PostManager
     objects = PostManager()
 
     class Meta:
