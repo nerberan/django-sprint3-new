@@ -1,11 +1,27 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 
 STR_LENGTH = 256
-
-
 User = get_user_model()
+
+
+class PostQuerySet(models.QuerySet):
+    def published(self):
+        return self.filter(
+            is_published=True,
+            pub_date__lte=timezone.now(),
+            category__is_published=True
+        )
+
+
+class PostManager(models.Manager):
+    def get_queryset(self):
+        return PostQuerySet(self.model, using=self._db)
+
+    def published(self):
+        return self.get_queryset().published()
 
 
 class BaseModel(models.Model):
@@ -55,9 +71,12 @@ class Post(BaseModel):
         verbose_name='Категория',
     )
 
+    objects = PostManager()
+
     class Meta:
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
+        ordering = ('-pub_date',)
 
     def __str__(self):
         return self.title
