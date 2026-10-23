@@ -2,11 +2,33 @@ from django.db import models
 from django.contrib.auth import get_user_model
 
 
+STR_LENGTH = 256
+
+
 User = get_user_model()
 
 
-class Post(models.Model):
-    title = models.CharField(max_length=256, verbose_name='Заголовок')
+class BaseModel(models.Model):
+    """
+    Абстрактная модель.
+    Добавляет к модели атрибуты Опубликовано и Добавлено.
+    """
+
+    is_published = models.BooleanField(
+        default=True,
+        verbose_name='Опубликовано',
+        help_text='Снимите галочку, чтобы скрыть публикацию.',
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Добавлено',)
+
+    class Meta:
+        abstract = True
+
+
+class Post(BaseModel):
+    title = models.CharField(max_length=STR_LENGTH, verbose_name='Заголовок')
     text = models.TextField(verbose_name='Текст')
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
@@ -32,14 +54,6 @@ class Post(models.Model):
         null=True,
         verbose_name='Категория',
     )
-    is_published = models.BooleanField(
-        default=True,
-        verbose_name='Опубликовано',
-        help_text='Снимите галочку, чтобы скрыть публикацию.',
-    )
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Добавлено',)
 
     class Meta:
         verbose_name = 'публикация'
@@ -49,8 +63,8 @@ class Post(models.Model):
         return self.title
 
 
-class Category(models.Model):
-    title = models.CharField(max_length=256, verbose_name='Заголовок')
+class Category(BaseModel):
+    title = models.CharField(max_length=STR_LENGTH, verbose_name='Заголовок')
     description = models.TextField(verbose_name='Описание')
     slug = models.SlugField(
         unique=True,
@@ -59,15 +73,6 @@ class Category(models.Model):
             'Идентификатор страницы для URL; разрешены '
             'символы латиницы, цифры, дефис и подчёркивание.'
         ),
-    )
-    is_published = models.BooleanField(
-        default=True,
-        verbose_name='Опубликовано',
-        help_text='Снимите галочку, чтобы скрыть публикацию.',
-    )
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Добавлено',
     )
 
     class Meta:
@@ -78,16 +83,10 @@ class Category(models.Model):
         return self.title
 
 
-class Location(models.Model):
-    name = models.CharField(max_length=256, verbose_name='Название места')
-    is_published = models.BooleanField(
-        default=True,
-        verbose_name='Опубликовано',
-        help_text='Снимите галочку, чтобы скрыть публикацию.',
-    )
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Добавлено',
+class Location(BaseModel):
+    name = models.CharField(
+        max_length=STR_LENGTH,
+        verbose_name='Название места'
     )
 
     class Meta:
